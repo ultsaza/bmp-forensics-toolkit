@@ -1,1 +1,0 @@
-# bmp-forensics-toolkit

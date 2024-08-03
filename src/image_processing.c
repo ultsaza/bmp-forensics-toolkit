@@ -94,20 +94,28 @@ void imageLaplacian(BMPImage *img, BMPImage *result) {
     }
 }
 
-BMPImage* extractLSB(BMPImage *img) {
-    if (!img || !img->data) return NULL;
+void separateRGB(BMPImage *img, BMPImage *red, BMPImage *green, BMPImage *blue) {
+    int width = img->infoHeader.width;
+    int height = img->infoHeader.height;
+    int size = width * height * 3;
+
+    for (int i = 0; i < size; i += 3) {
+        red->data[i] = red->data[i+1] = red->data[i+2] = img->data[i+2];   // Red channel
+        green->data[i] = green->data[i+1] = green->data[i+2] = img->data[i+1]; // Green channel
+        blue->data[i] = blue->data[i+1] = blue->data[i+2] = img->data[i];  // Blue channel
+    }
+}
+
+BMPImage* extractBit(BMPImage *img, int bitPosition) {
+    if (!img || !img->data || bitPosition < 0 || bitPosition > 7) return NULL;
 
     BMPImage *result = (BMPImage*)malloc(sizeof(BMPImage));
     if (!result) return NULL;
 
-    // ヘッダ情報をコピー
     memcpy(&result->fileHeader, &img->fileHeader, sizeof(BMPFileHeader));
     memcpy(&result->infoHeader, &img->infoHeader, sizeof(BMPInfoHeader));
 
-    int width = img->infoHeader.width;
-    int height = img->infoHeader.height;
-    int size = width * height * 3;  // 24-bit BMPを想定
-
+    int size = img->infoHeader.width * img->infoHeader.height * 3;
     result->data = (uint8_t*)malloc(size);
     if (!result->data) {
         free(result);
@@ -115,9 +123,13 @@ BMPImage* extractLSB(BMPImage *img) {
     }
 
     for (int i = 0; i < size; i++) {
-        // 最下位ビットを抽出し、それを新しい画像の対応するバイトの最上位ビットにセット
-        result->data[i] = (img->data[i] & 0x01) ? 0xFF : 0x00;
+        result->data[i] = (img->data[i] & (1 << bitPosition)) ? 0xFF : 0x00;
     }
 
     return result;
+}
+
+// extractLSB 関数を extractBit 関数で置き換え
+BMPImage* extractLSB(BMPImage *img) {
+    return extractBit(img, 0);
 }

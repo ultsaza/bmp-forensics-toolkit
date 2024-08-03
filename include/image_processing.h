@@ -13,7 +13,10 @@ void imageSmooth(BMPImage *img, BMPImage *result);
 void imageDifferential(BMPImage *img, BMPImage *result, int direction);
 void imageLaplacian(BMPImage *img, BMPImage *result);
 
-// 最下位ビット抽出関数
-BMPImage* extractLSB(BMPImage *img);
+// RGB分離関数
+void separateRGB(BMPImage *img, BMPImage *red, BMPImage *green, BMPImage *blue);
+
+// 指定ビット抽出関数（既存の extractLSB を置き換え）
+BMPImage* extractBit(BMPImage *img, int bitPosition);
 
 #endif // IMAGE_PROCESSING_H
