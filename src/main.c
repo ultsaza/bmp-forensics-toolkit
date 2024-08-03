@@ -1,96 +1,70 @@
+// main.c
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "bmp.h"
 #include "image_processing.h"
 
-void printUsage(const char* programName) {
-    printf("Usage:\n");
-    printf("%s rgb <input_file.bmp> <output_prefix>\n", programName);
-    printf("%s extract-bit <input_file.bmp> <output_file.bmp> <bit_position>\n", programName);
+void testLogicalOperations(BMPImage *input) {
+    BMPImage *input2 = loadBMP("myicon.bmp");  // 同じ画像を使用
+    BMPImage *result = createBMPImage(input->infoHeader.width, input->infoHeader.height);
+
+    imageAnd(input, input2, result);
+    saveBMP("output_and.bmp", result);
+
+    imageOr(input, input2, result);
+    saveBMP("output_or.bmp", result);
+
+    imageXor(input, input2, result);
+    saveBMP("output_xor.bmp", result);
+
+    freeBMP(input2);
+    freeBMP(result);
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 4) {
-        printUsage(argv[0]);
-        return 1;
-    }
+void testFilters(BMPImage *input) {
+    BMPImage *result = createBMPImage(input->infoHeader.width, input->infoHeader.height);
 
-    const char *command = argv[1];
-    const char *input_file = argv[2];
+    imageSmooth(input, result);
+    saveBMP("output_smooth.bmp", result);
 
-    BMPImage *input_image = loadBMP(input_file);
-    if (!input_image) {
+    imageDifferential(input, result, 0);  // X方向
+    saveBMP("output_differential_x.bmp", result);
+
+    imageDifferential(input, result, 1);  // Y方向
+    saveBMP("output_differential_y.bmp", result);
+
+    imageLaplacian(input, result);
+    saveBMP("output_laplacian.bmp", result);
+
+    freeBMP(result);
+}
+
+void testLSBExtraction(BMPImage *input) {
+    BMPImage *lsb = extractBit(input, 0);
+    saveBMP("output_lsb.bmp", lsb);
+    freeBMP(lsb);
+}
+
+int main() {
+    const char *input_file = "myicon.bmp";
+    
+    BMPImage *input = loadBMP(input_file);
+    if (!input) {
         printf("Error: Could not load input file %s\n", input_file);
         return 1;
     }
 
-    if (strcmp(command, "rgb") == 0) {
-        if (argc != 4) {
-            printUsage(argv[0]);
-            freeBMP(input_image);
-            return 1;
-        }
+    printf("Testing logical operations...\n");
+    testLogicalOperations(input);
 
-        const char *output_prefix = argv[3];
-        char output_file[256];
+    printf("Testing filters...\n");
+    testFilters(input);
 
-        BMPImage *red = loadBMP(input_file);
-        BMPImage *green = loadBMP(input_file);
-        BMPImage *blue = loadBMP(input_file);
+    printf("Testing LSB extraction...\n");
+    testLSBExtraction(input);
 
-        separateRGB(input_image, red, green, blue);
+    printf("All tests completed. Check output files for results.\n");
 
-        snprintf(output_file, sizeof(output_file), "%s_red.bmp", output_prefix);
-        saveBMP(output_file, red);
-
-        snprintf(output_file, sizeof(output_file), "%s_green.bmp", output_prefix);
-        saveBMP(output_file, green);
-
-        snprintf(output_file, sizeof(output_file), "%s_blue.bmp", output_prefix);
-        saveBMP(output_file, blue);
-
-        printf("RGB separation completed. Results saved with prefix %s\n", output_prefix);
-
-        freeBMP(red);
-        freeBMP(green);
-        freeBMP(blue);
-    }
-    else if (strcmp(command, "extract-bit") == 0) {
-        if (argc != 5) {
-            printUsage(argv[0]);
-            freeBMP(input_image);
-            return 1;
-        }
-
-        const char *output_file = argv[3];
-        int bit_position = atoi(argv[4]);
-
-        BMPImage *bit_image = extractBit(input_image, bit_position);
-        if (!bit_image) {
-            printf("Error: Failed to extract bit\n");
-            freeBMP(input_image);
-            return 1;
-        }
-
-        if (!saveBMP(output_file, bit_image)) {
-            printf("Error: Could not save output file %s\n", output_file);
-            freeBMP(input_image);
-            freeBMP(bit_image);
-            return 1;
-        }
-
-        printf("Bit extraction completed. Result saved to %s\n", output_file);
-
-        freeBMP(bit_image);
-    }
-    else {
-        printf("Unknown command: %s\n", command);
-        printUsage(argv[0]);
-        freeBMP(input_image);
-        return 1;
-    }
-
-    freeBMP(input_image);
+    freeBMP(input);
     return 0;
 }
