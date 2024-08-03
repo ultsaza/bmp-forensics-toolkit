@@ -38,4 +38,6 @@ BMPImage* loadBMP(const char *filename);
 int saveBMP(const char *filename, BMPImage *image);
 void freeBMP(BMPImage *image);
 
+BMPImage* createBMPImage(int width, int height);
+
 #endif // BMP_H
