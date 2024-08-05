@@ -94,7 +94,7 @@ void imageLaplacian(BMPImage *img, BMPImage *result) {
     }
 }
 
-void separateRGB(BMPImage *img, BMPImage *red, BMPImage *green, BMPImage *blue) {
+void imageSeparateRGB(BMPImage *img, BMPImage *red, BMPImage *green, BMPImage *blue) {
     int width = img->infoHeader.width;
     int height = img->infoHeader.height;
     int size = width * height * 3;

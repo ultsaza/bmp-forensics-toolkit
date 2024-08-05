@@ -14,7 +14,8 @@ void testLogicalOperations(BMPImage *input) {
     imageOr(input, input2, result);
     saveBMP("output_or.bmp", result);
 
-    imageXor(input, input2, result);
+    BMPImage *test = loadBMP("output_laplacian.bmp");
+    imageXor(input, input2, test);
     saveBMP("output_xor.bmp", result);
 
     freeBMP(input2);
