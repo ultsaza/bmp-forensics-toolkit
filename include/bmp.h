@@ -1,4 +1,3 @@
-// bmp.h
 #ifndef BMP_H
 #define BMP_H
 
