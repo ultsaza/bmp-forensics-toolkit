@@ -1,6 +1,8 @@
 #include "image_processing.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include <math.h>
 
 // 論理演算関数の実装
@@ -47,6 +49,7 @@ void imageSmooth(BMPImage *img, BMPImage *result) {
 }
 
 // 微分フィルタ (簡易版: Sobel)
+// sobelフィルタから変更する予定
 void imageDifferential(BMPImage *img, BMPImage *result, int direction) {
     int width = img->infoHeader.width;
     int height = img->infoHeader.height;
