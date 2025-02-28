@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (strcmp(argv[1], "separate") == 0) {
-        if (argc < 4) {
+        if (argc < 3) {
             printf("Error: Not enough arguments for separate\n");
             show_help(argv[0]);
             return 1;
