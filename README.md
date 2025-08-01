@@ -1,6 +1,4 @@
-# BMP Forensics Toolkit
-
-A forensic analysis toolkit for BMP files providing image overlay, filtering, RGB channel separation, and bit extraction capabilities.
+A image processing toolkit for BMP files providing image overlay, filtering, RGB channel separation, and bit extraction capabilities.
 
 ## Build
 
